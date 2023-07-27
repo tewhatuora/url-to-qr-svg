@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>URL to QR code</title>
+	<header>
+		<h1>Convert a URL to a QR Code</h1>
+		<p>This page can create a QR Code for you (in SVG format), if you supply a URL.</p>
+	</header>
+	<main>
+		<form action="." method="GET">
+			<div class="form_row">
+				<label for="form_field_url">
+					<abbr title="Universal resource locator">URL</abbr>
+				</label>
+				<div class="form_field">
+					<input tpye="url" id="form_field_url" name="url" required maxlength="428" value="https://tewhatuora.govt.nz">
+				</div>
+			</div>
+			<div class="button_row">
+				<button type="submit" class="button button_primary">Convert</button>
+			</div>
+		</form>
+		<div id="result" hidden>
+
+		</div>
+	</main>
+	<footer>
+
+	</footer>
+	<script src="./node_modules/@lemaik/qrcode-svg/dist/qrcode.min.js"></script>
+	<script>
+		function convertStringToQRCode(givenString) {
+			let qrcode = new QRCode({ content: givenString, join: true });
+			let svgElemText = qrcode.svg();
+			document.getElementById('result').innerHTML = svgElemText;
+			document.getElementById('result').hidden = false;
+		}
+
+		function handleSubmit(event) {
+			event.preventDefault();
+
+			let urlValue = new FormData(event.target).get('url');
+			convertStringToQRCode(urlValue);
+		}
+
+		document.addEventListener('submit', handleSubmit);
+	</script>
