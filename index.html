@@ -11,10 +11,17 @@
 		<form action="." method="GET">
 			<div class="form_row">
 				<label for="form_field_url">
-					<abbr title="Universal resource locator">URL</abbr>
+					<abbr title="Uniform resource locator">URL</abbr> / Web address
 				</label>
 				<div class="form_field">
-					<input tpye="url" id="form_field_url" name="url" required maxlength="428" value="https://tewhatuora.govt.nz">
+					<input 
+						tpye="url"
+						id="form_field_url"
+						name="url"
+						required
+						maxlength="428"
+						placeholder="e.g. https://tewhatuora.govt.nz"
+						value="">
 				</div>
 			</div>
 			<div class="button_row">
@@ -22,7 +29,8 @@
 			</div>
 		</form>
 		<div id="result" hidden>
-
+			<div class="container_svg"></div>
+			<a download="qrcode.svg">Download SVG</a>
 		</div>
 	</main>
 	<footer>
@@ -30,19 +38,53 @@
 	</footer>
 	<script src="./node_modules/@lemaik/qrcode-svg/dist/qrcode.min.js"></script>
 	<script>
-		function convertStringToQRCode(givenString) {
-			let qrcode = new QRCode({ content: givenString, join: true });
-			let svgElemText = qrcode.svg();
-			document.getElementById('result').innerHTML = svgElemText;
-			document.getElementById('result').hidden = false;
-		}
+		((T,W,O) => {
 
-		function handleSubmit(event) {
-			event.preventDefault();
+			const SELECTOR_RESULT_CONTAINER = '#result',
+			      SELECTOR_SVG_CONTAINER = `${SELECTOR_RESULT_CONTAINER} .container_svg`,
+			      SELECTOR_DOWNLOAD_LINK = `${SELECTOR_RESULT_CONTAINER} a[download]`,
+			      MIME_TYPE_SVG = 'image/svg+xml',
+			      FORM_FIELD_NAME_URL = 'url',
+			      FILENAME_PREFIX = 'qrcode',
+			      FILENAME_SUFFIX = '.svg',
+			      ELEMENT_RESULT = T.querySelector(SELECTOR_RESULT_CONTAINER),
+			      ELEMENT_SVG_CONTAINER = T.querySelector(SELECTOR_SVG_CONTAINER),
+			      ELEMENT_DOWNLOAD_LINK = T.querySelector(SELECTOR_DOWNLOAD_LINK);
 
-			let urlValue = new FormData(event.target).get('url');
-			convertStringToQRCode(urlValue);
-		}
+			let urlValue = null;
 
-		document.addEventListener('submit', handleSubmit);
+			function generateSafeFilename() {
+				let urlString = urlValue.split('://')[1].replace(/[^a-zA-Z0-9]/g, '_');
+				return `${FILENAME_PREFIX}-${W.encodeURIComponent(urlString)}${FILENAME_SUFFIX}`;
+			}
+
+			function generateDownloadLinkFromSVG(svgElemText) {
+				let svgBlob = new Blob([svgElemText], {type:MIME_TYPE_SVG});
+				ELEMENT_DOWNLOAD_LINK.href = W.URL.createObjectURL(svgBlob);
+				ELEMENT_DOWNLOAD_LINK.download = generateSafeFilename();
+			}
+
+			function convertStringToQRCodeSVG() {
+				let qrcode = new QRCode({
+					content: urlValue,
+					xmlDeclaration: false,
+				});
+				let svgElemText = qrcode.svg();
+
+				generateDownloadLinkFromSVG(svgElemText);
+
+				ELEMENT_SVG_CONTAINER.innerHTML = svgElemText;
+				ELEMENT_RESULT.hidden = false;
+			}
+
+			function handleSubmit(event) {
+				event.preventDefault();
+
+				urlValue = new FormData(event.target).get(FORM_FIELD_NAME_URL);
+				convertStringToQRCodeSVG();
+			}
+
+			T.addEventListener('submit', handleSubmit);
+
+		})(document, window);
 	</script>
