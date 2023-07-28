@@ -37,3 +37,7 @@ npm i -g http-server
 ```bash
 npm start
 ```
+
+### Publishing
+
+Once your changes are in the `main` branch, GitHub Pages will deploy everything in this repo to [https://tewhatuora.github.io/url-to-qr-svg/](https://tewhatuora.github.io/url-to-qr-svg/)
