@@ -3,38 +3,212 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>URL to QR code</title>
+	<style>
+		:root {
+			--twoken-color-aqua: hsl(219, 57%, 19%);
+		}
+
+		html {
+			--font-size-base: 1rem;
+			--color-button-primary-background: var(--twoken-color-aqua);
+			--color-button-primary-foreground: #fff;
+			--color-two-header-background: var(--twoken-color-aqua);
+			--color-two-header-foreground: #fff;
+			--color-main-header-background: #eee;
+			--color-main-header-foreground: var(--twoken-color-aqua);
+			--color-footer-background: #eee;
+			--color-footer-foreground: var(--twoken-color-aqua);
+			--color-link-default: var(--twoken-color-aqua);
+			--spacing-container-inner: 1rem;
+
+			font-family: sans-serif;
+			font-size: 100%;
+			block-size: 100%;
+		}
+
+		body {
+			font-size: var(--font-size-base);
+			line-height: 1.25;
+			margin: 0;
+			display: flex;
+			flex-direction: column;
+			justify-content: stretch;
+			block-size: 100%;
+		}
+
+		@media (min-width: 800px) {
+			html {
+				--font-size-base: 1.25rem;
+			}
+		}
+
+		body > header {
+			background-color: var(--color-two-header-background);
+			color: var(--color-two-header-foreground);
+			flex-grow: 0;
+			flex-shrink: 0;
+			padding-block: calc(var(--spacing-container-inner) * 2);
+			padding-inline: var(--spacing-container-inner);
+		}
+
+		body > header a {
+			display: block;
+			inline-size: 217px;
+			block-size: 48px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-indent: -999rem;
+			background-image: url('./img/logo_te_whatu_ora_inverted.svg');
+			background-size: contain;
+		}
+
+		body > header a:focus-visible {
+			outline-color: #fff;
+			outline-offset: 0.5rem;
+		}
+
+		body > :is(main, footer) {
+			padding: var(--spacing-container-inner);
+		}
+
+		main {
+			flex-grow: 1;
+		}
+
+		main > header {
+			margin-block-start: calc(var(--spacing-container-inner) * -1);
+			margin-block-end: 0;
+			margin-inline: calc(var(--spacing-container-inner) * -1);
+			background-color: var(--color-main-header-background);
+			color: var(--color-main-header-foreground);
+			padding: var(--spacing-container-inner);
+		}
+
+		header :is(h1, h2, p) {
+			margin: 0;
+		}
+
+		article {
+			padding-block: 4rem;
+			padding-inline: 0;
+			max-inline-size: 800px;
+		}
+
+		label {
+			font-weight: 600;
+		}
+
+		input,
+		button {
+			appearance: none;
+			font-size: inherit;
+			font-family: inherit;
+			border-radius: 0.5rem;
+			max-inline-size: 100%;
+		}
+		
+		input {
+			box-sizing: border-box;
+			min-inline-size: 100%;
+			padding-block: 0.875rem;
+			padding-inline: 1rem;
+			line-height: 1.6;
+			border: 1px solid #ccc;
+		}
+
+		button {
+			padding-block: 1.125rem;
+			padding-inline: 1.5rem;
+			font-weight: 600;
+			line-height: 1.3;
+			border: none;
+		}
+
+		svg {
+			max-inline-size: 100%;
+		}
+
+		a {
+			color: var(--color-link-default);
+		}
+
+		a:hover {
+			text-decoration: none;
+		}
+
+		body > footer {
+			flex-grow: 0;
+			flex-shrink: 0;
+			background-color: var(--color-footer-background);
+			color: var(--color-footer-foreground);
+		}
+
+		.button_primary {
+			background-color: var(--color-button-primary-background);
+			color: var(--color-button-primary-foreground);
+		}
+
+		.form_field {
+			margin-block-start: 0.25rem;
+		}
+
+		#result {
+			margin-block: 2rem;
+		}
+	</style>
 	<header>
-		<h1>Convert a URL to a QR Code</h1>
-		<p>This page can create a QR Code for you (in SVG format), if you supply a URL.</p>
+		<h1><a href="https://tewhatuora.govt.nz" lang="mi">Te Whatu Ora</a></h1>
 	</header>
 	<main>
-		<form action="." method="GET">
-			<div class="form_row">
-				<label for="form_field_url">
-					<abbr title="Uniform resource locator">URL</abbr> / Web address
-				</label>
-				<div class="form_field">
-					<input 
-						tpye="url"
-						id="form_field_url"
-						name="url"
-						required
-						maxlength="428"
-						placeholder="e.g. https://tewhatuora.govt.nz"
-						value="">
+		<header>
+			<h2>Convert a URL to a QR Code</h2>
+			<p>This page can create a QR Code for you (in SVG format), if you supply a URL.</p>
+		</header>
+		<article>
+			<form action="." method="GET">
+				<div class="form_row">
+					<label for="form_field_url">
+						Enter a <abbr title="Uniform resource locator">URL</abbr> or web address
+					</label>
+					<div class="form_field">
+						<input 
+							tpye="url"
+							id="form_field_url"
+							name="url"
+							required
+							maxlength="428"
+							placeholder="e.g. https://tewhatuora.govt.nz"
+							value="">
+					</div>
 				</div>
+				<p class="button_row">
+					<button type="submit" class="button button_primary">Convert</button>
+				</p>
+			</form>
+			<div id="result" hidden>
+				<div class="container_svg"></div>
+				<p>
+					<a download="qrcode.svg">Download SVG</a>
+				</p>
 			</div>
-			<div class="button_row">
-				<button type="submit" class="button button_primary">Convert</button>
-			</div>
-		</form>
-		<div id="result" hidden>
-			<div class="container_svg"></div>
-			<a download="qrcode.svg">Download SVG</a>
-		</div>
+		</article>
 	</main>
 	<footer>
-
+		<p>
+			<small>
+				This service would not be possible without the
+				<a href="https://github.com/leMaik/qrcode-svg#thanks" rel="noopener nofollow">
+					prior work of @LeMaik and other open source contributors
+				</a>
+			</small>
+			<br>
+			<small>
+				<em>“QR Code”</em> is registered trademark of
+				<a href="http://www.denso-wave.com/qrcode/faqpatent-e.html" rel="noopener nofollow">
+					Denso Wave Incorporated
+				</a>
+			</small>
+		</p>
 	</footer>
 	<script src="./node_modules/@lemaik/qrcode-svg/dist/qrcode.min.js"></script>
 	<script>
@@ -68,6 +242,7 @@
 				let qrcode = new QRCode({
 					content: urlValue,
 					xmlDeclaration: false,
+					padding: 0,
 				});
 				let svgElemText = qrcode.svg();
 
